@@ -14,8 +14,8 @@ export class ProductService {
   constructor(private productApiService: ProductApiService, private imageApiService: ImageApiService) {}
 
   fetchProductList() {
-    this.productApiService.getProductList().subscribe((productsData: Product[]) => {
-      this.products = productsData;
+    this.productApiService.getProductList().subscribe((data: Product[]) => {
+      this.products = data;
       this.productsChanged.next(this.products.slice());
     })
   }
@@ -27,24 +27,18 @@ export class ProductService {
   createProduct(product: Product, imageData: FormData) {
     this.productApiService.createProduct(product).subscribe((productData: Product) => {
       this.imageApiService.uploadImages(imageData, productData.id).subscribe(() => {
-        this.productApiService.getProductList().subscribe((productsData: Product[]) => {
-          this.products = productsData;
-          this.productsChanged.next(this.products.slice());
-        });
+        this.fetchProductList();
       })
     });
   }
 
   updateProduct(id: number, product : Product) {
     this.productApiService.updateProduct(id, product).subscribe(() => {
-      this.productApiService.getProductList().subscribe((productsData: Product[]) => {
-        this.products = productsData;
-        this.productsChanged.next(this.products.slice());
-      })
-    })
+      this.fetchProductList();
+    });
   }
 
-  private getProduct(id: number) {
+  getProduct(id: number) {
     for (let product of this.products) {
       if (product.id === id) {
         return product;
@@ -52,7 +46,7 @@ export class ProductService {
     }
   }
 
-  getProductById(id: number) {
+  fetchProductById(id: number) {
     this.productApiService.getProduct(id).subscribe((productData: Product) => {
       this.setProduct(productData);
     });

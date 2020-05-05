@@ -5,10 +5,10 @@
       <aside class="col-sm-6">
         <article class="gallery-wrap">
           <div class="img-big-wrap">
-            <a href="#"><img src="{{ imageUrls[0] }}"></a>
+            <a><img src="{{ bigImageUrl }}"></a>
           </div> <!-- img-big-wrap.// -->
           <div class="thumbs-wrap">
-            <a href="#" class="item-thumb border-0" *ngFor="let image of imageUrls"> <img src="{{ image }}"></a>
+            <a (click)="onChangeImage(i)" style="cursor: pointer;" class="item-thumb border-0" *ngFor="let imageUrl of imageUrls; let i = index"> <img src="{{ imageUrl }}"></a>
           </div> <!-- thumbs-wrap.// -->
         </article> <!-- gallery-wrap .end// -->
       </aside>
@@ -24,31 +24,28 @@
           <div class="form-row">
             <div class="col-xl-2 mr-3">
               <label>Số lượng</label>
-              <select class="form-control rounded-0 border-dark">
-                <option> 1 </option>
-                <option> 2 </option>
-                <option> 3 </option>
+              <select class="form-control rounded-0 border-dark" (change)="onSetQuantity($event.target.value)">
+                <option *ngFor="let quantity of quantities"> {{quantity}} </option>
               </select>
             </div> <!-- col.// -->
             <div class="col-xl-2 mr-3">
               <label>Kích cỡ</label>
-              <select class="form-control border-dark rounded-0">
+              <select class="form-control border-dark rounded-0" (change)="onSetSize($event.target.value)">
                 <option *ngFor="let size of product.sizes">{{size.size}}</option>
               </select>
             </div> <!-- col.// -->
             <div class="col-xl-4 mr-3">
               <label>Màu sắc</label>
-              <select class="form-control border-dark rounded-0">
+              <select class="form-control border-dark rounded-0" (change)="onSetColor($event.target.value)">
                 <option *ngFor="let color of product.colors">{{color.name}}</option>
               </select>
             </div> <!-- col.// -->
           </div> <!-- row.// -->
           <div class="row mt-4">
             <div class="col-xl-4">
-              <a href="#" class="btn  btn-outline-dark rounded-0 w-100"> <span class="text">Mua hàng</span> <i class="fas fa-shopping-cart"></i>  </a>
+              <button type="button" class="btn btn-outline-dark rounded-0 w-100" (click)="onAddToCart()"> <span class="text">Mua hàng</span> <i class="fas fa-shopping-cart"></i></button>
             </div>
           </div>
-
         </article> <!-- product-info-aside .// -->
       </main> <!-- col.// -->
     </div> <!-- row.// -->

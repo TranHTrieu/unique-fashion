@@ -41,8 +41,6 @@ public class ImageController {
         List<Image> compressedImages = new ArrayList<>();
         for (MultipartFile file : files) {
             String imagePath = UPLOAD_PATH + "/" + file.getOriginalFilename();
-            Path path = Paths.get(imagePath);
-            Files.write(path, file.getBytes());
             Image img = new Image(file.getOriginalFilename(), file.getContentType(), compressBytes(file.getBytes()));
             compressedImages.add(img);
         }
