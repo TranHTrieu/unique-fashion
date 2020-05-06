@@ -8,7 +8,6 @@ export class LoginService {
   constructor(private http: HttpClient) {}
 
   login(loginPayload): Observable<Object> {
-    console.log(loginPayload);
     return this.http.post<Object>('http://localhost:8080/' + 'login', loginPayload).pipe(catchError(this.handleError));
   }
 
@@ -20,7 +19,7 @@ export class LoginService {
     }
     switch (errorResponse.status) {
       case 401:
-        errorMessage = 'This account doesn\'t exist';
+        errorMessage = 'Tài khoản không tồn tại';
         break;
     }
     return throwError(errorMessage);

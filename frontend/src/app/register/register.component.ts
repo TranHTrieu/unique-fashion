@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Account} from "../account/account.model";
 import {Router} from "@angular/router";
-import {AccountService} from "../account/account.service";
+import {RegisterService} from "./register.service";
 
 @Component({
   selector: 'app-register',
@@ -13,16 +13,29 @@ export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   errorMessage: string = "";
 
-  constructor(private accountService: AccountService, private router: Router) { }
+  constructor(private router: Router, private registerService: RegisterService) { }
 
   ngOnInit(): void {
     this.registerForm = new FormGroup({
-      "email": new FormControl("", [Validators.required, Validators.email]),
-      "password": new FormControl("", Validators.required),
-      "name": new FormControl("", Validators.required),
+      "email": new FormControl("", [
+        Validators.required,
+        Validators.email
+      ]),
+      "password": new FormControl("",
+        [
+          Validators.required,
+          Validators.minLength(8),
+          this.cannotContainSpace,
+        ]),
+      "name": new FormControl("", [Validators.required]),
       "street": new FormControl("", Validators.required),
       "city": new FormControl("", Validators.required),
-      "phone": new FormControl("", Validators.required),
+      "phone": new FormControl("", [
+        Validators.required,
+        Validators.minLength(10),
+        Validators.pattern('^-?[0-9]\\d*(\\.\\d{1,2})?$'),
+        ]
+        ),
       "agreement": new FormControl("", Validators.requiredTrue)
     })
   }
@@ -36,6 +49,7 @@ export class RegisterComponent implements OnInit {
       }, 2000);
       return;
     }
+
     const address: string = this.registerForm.get('street').value + this.registerForm.get('city').value;
     const newAccount: Account = new Account(
       this.registerForm.get('email').value,
@@ -44,11 +58,24 @@ export class RegisterComponent implements OnInit {
       address,
       this.registerForm.get('phone').value
     );
-    this.accountService.createAccount(newAccount);
-    this.router.navigate(['/login']);
+    this.registerService.register(newAccount).subscribe((data) => {
+      this.router.navigate(['/login']);
+    }, errorMessage => {
+      this.errorMessage = errorMessage;
+      setTimeout(() => {
+        this.errorMessage = '';
+      }, 2000);
+    });
   }
 
   isInvalidField(field: string): boolean {
     return !this.registerForm.get(field).valid && this.registerForm.get(field).touched;
+  }
+
+  public cannotContainSpace(control: FormControl) {
+    if ((control.value as string).indexOf(' ') >= 0){
+      return {cannotContainSpace: true};
+    }
+    return null;
   }
 }
